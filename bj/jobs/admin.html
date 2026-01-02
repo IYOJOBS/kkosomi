@@ -31,27 +31,26 @@
   <!-- 서버 저장 함수 -->
   <script src="/assets/js/action.js"></script>
 
-  <!-- 적용 버튼 클릭 로직 -->
-  <script>
-    document
-      .getElementById("btn-apply-settings")
-      .addEventListener("click", () => {
+ <script>
+  document
+    .getElementById("btn-apply-settings")
+    .addEventListener("click", () => {
 
-        // 테스트용 상태 데이터
-        const state = {
-          config: {
-            cols: 5,
-            rows: 5,
-            cellSize: 120
-          },
-          boards: [],
-          currentIndex: 0
-        }
+      const cols = Number(document.getElementById("input-cols").value)
+      const rows = Number(document.getElementById("input-rows").value)
+      const cellSize = Number(document.getElementById("input-cell").value)
 
-        saveToServer(state)
-        alert("서버에 저장 요청 보냄")
-      })
-  </script>
+      const state = {
+        config: { cols, rows, cellSize },
+        boards: [],
+        currentIndex: 0
+      }
+
+      saveToServer(state)
+      alert("서버에 저장됨")
+    })
+</script>
+
 
 </body>
 </html>
