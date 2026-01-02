@@ -31,7 +31,7 @@
   <!-- 서버 저장 함수 -->
   <script src="/assets/js/action.js"></script>
 
- <script>
+<script>
   document
     .getElementById("btn-apply-settings")
     .addEventListener("click", () => {
@@ -46,7 +46,12 @@
         currentIndex: 0
       }
 
-      saveToServer(state)
+      // 🔥 이 줄 추가
+      const bj = new URLSearchParams(location.search).get("bj") || "jobs"
+
+      // 🔥 이 줄 변경
+      saveToServer(state, bj)
+
       alert("서버에 저장됨")
     })
 </script>
