@@ -42,14 +42,16 @@
 
   <script>
     const API_BASE = "https://broken-mode-e7b0.rlaxodus465.workers.dev"
+const bj = new URLSearchParams(location.search).get("bj") || "jobs"
 
-    async function loadFromServer() {
-      const res = await fetch(API_BASE + "/load")
-      const data = await res.json()
-      if (!data || !data.config) return
+async function loadFromServer() {
+  const res = await fetch(`${API_BASE}/load?bj=${bj}`)
+  const data = await res.json()
+  if (!data || !data.config) return
 
-      renderBingo(data.config)
-    }
+  renderBingo(data.config)
+}
+
 
     function renderBingo(config) {
       const { cols, rows, cellSize } = config
