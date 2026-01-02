@@ -4,38 +4,80 @@
   <meta charset="UTF-8" />
   <title>빙고 송출</title>
   <style>
-    body { margin:0; background:transparent; }
-    #bingo-wrap { padding:14px; }
+    body {
+      margin: 0;
+      background: transparent;
+    }
+
+    #bingo-wrap {
+      padding: 14px;
+    }
+
     #bingo-grid {
-      display:grid;
-      grid-template-columns: repeat(5, 120px);
-      gap:10px;
+      display: grid;
+      gap: 10px;
     }
+
     .bingo-cell {
-      width:120px; height:120px;
-      background:#fff; border-radius:14px;
-      position:relative;
-      font-weight:700; color:#111;
+      background: #fff;
+      border-radius: 14px;
+      position: relative;
+      font-weight: 700;
+      color: #111;
     }
-    .num { position:absolute; top:8px; left:10px; font-size:14px; }
+
+    .bingo-number {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
+
   <div id="bingo-wrap">
     <div id="bingo-grid"></div>
   </div>
 
   <script>
-    const grid = document.getElementById('bingo-grid')
-    for (let i=1;i<=25;i++){
-      const c=document.createElement('div')
-      c.className='bingo-cell'
-      const n=document.createElement('div')
-      n.className='num'
-      n.textContent=i
-      c.appendChild(n)
-      grid.appendChild(c)
+    const API_BASE = "https://broken-mode-e7b0.rlaxodus465.workers.dev"
+
+    async function loadFromServer() {
+      const res = await fetch(API_BASE + "/load")
+      const data = await res.json()
+      if (!data || !data.config) return
+
+      renderBingo(data.config)
     }
+
+    function renderBingo(config) {
+      const { cols, rows, cellSize } = config
+      const grid = document.getElementById("bingo-grid")
+
+      grid.innerHTML = ""
+      grid.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`
+
+      const total = cols * rows
+
+      for (let i = 1; i <= total; i++) {
+        const cell = document.createElement("div")
+        cell.className = "bingo-cell"
+        cell.style.width = cellSize + "px"
+        cell.style.height = cellSize + "px"
+
+        const num = document.createElement("div")
+        num.className = "bingo-number"
+        num.textContent = i
+
+        cell.appendChild(num)
+        grid.appendChild(cell)
+      }
+    }
+
+    loadFromServer()
+    setInterval(loadFromServer, 1000)
   </script>
+
 </body>
 </html>
