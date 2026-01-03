@@ -15,6 +15,7 @@ body {
   position: relative;
   box-shadow: 0 6px 14px rgba(0,0,0,0.12);
   overflow: hidden;
+  cursor: pointer;
 }
 
 /* 숫자 */
@@ -40,4 +41,21 @@ body {
   font-weight: 600;
   color: #111;
   word-break: keep-all;
+}
+.bingo-stamp {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.bingo-cell.checked .bingo-stamp {
+  display: flex;
+}
+
+.bingo-stamp img {
+  width: 80%;
+  height: auto;
 }
