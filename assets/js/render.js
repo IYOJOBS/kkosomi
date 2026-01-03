@@ -16,6 +16,7 @@ function renderAll() {
   for (let i = 1; i <= total; i++) {
     const cell = document.createElement("div")
     cell.className = "bingo-cell"
+    cell.dataset.index = i - 1
     cell.style.width = cellSize + "px"
     cell.style.height = cellSize + "px"
 
@@ -25,10 +26,21 @@ function renderAll() {
 
     const mission = document.createElement("div")
     mission.className = "bingo-mission"
-    mission.textContent = ""   // 다음 단계에서 사용
+    mission.textContent = ""
+
+    const stamp = document.createElement("div")
+    stamp.className = "bingo-stamp"
+
+    const img = document.createElement("img")
+    img.src = "/assets/img/stamp-kkosomi.png"
+    img.alt = "stamp"
+
+    stamp.appendChild(img)
 
     cell.appendChild(num)
     cell.appendChild(mission)
+    cell.appendChild(stamp)
+
     grid.appendChild(cell)
   }
 }
