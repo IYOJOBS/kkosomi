@@ -9,22 +9,26 @@ function renderAll() {
   grid.innerHTML = ""
   grid.style.display = "grid"
   grid.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`
-  grid.style.gap = "10px"
+  grid.style.gap = "12px"
 
   const total = cols * rows
 
   for (let i = 1; i <= total; i++) {
     const cell = document.createElement("div")
+    cell.className = "bingo-cell"
     cell.style.width = cellSize + "px"
     cell.style.height = cellSize + "px"
-    cell.style.background = "#fff"
-    cell.style.borderRadius = "14px"
-    cell.style.display = "flex"
-    cell.style.alignItems = "center"
-    cell.style.justifyContent = "center"
-    cell.style.fontWeight = "700"
 
-    cell.textContent = i
+    const num = document.createElement("div")
+    num.className = "bingo-number"
+    num.textContent = i
+
+    const mission = document.createElement("div")
+    mission.className = "bingo-mission"
+    mission.textContent = ""   // 다음 단계에서 사용
+
+    cell.appendChild(num)
+    cell.appendChild(mission)
     grid.appendChild(cell)
   }
 }
