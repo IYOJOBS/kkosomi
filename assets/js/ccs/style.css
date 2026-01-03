@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+  background: transparent;
+  font-family: Pretendard, Arial, sans-serif;
+}
+
+#bingo-grid {
+  place-content: center;
+}
+
+/* 빙고 셀 */
+.bingo-cell {
+  background: #ffffff;
+  border-radius: 18px;
+  position: relative;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+
+/* 숫자 */
+.bingo-number {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
+}
+
+/* 미션 텍스트 */
+.bingo-mission {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111;
+  word-break: keep-all;
+}
