@@ -3,35 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <title>빙고 송출</title>
-  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/style.css" />
 </head>
 <body>
 
-<div id="bingo-grid"></div>
+  <div id="bingo-grid"></div>
 
-<script src="/assets/js/render.js"></script>
-<script>
-async function loadFromServer() {
-  const bj =
-    new URLSearchParams(location.search).get("bj") || "jobs"
+  <script>
+    async function loadState() {
+      const params = new URLSearchParams(location.search)
+      const bj = params.get("bj") || "jobs"
 
-  const res = await fetch(
-    `https://broken-mode-e7b0.rlaxodus465.workers.dev/load?bj=${bj}`
-  )
+      const res = await fetch(
+        `https://broken-mode-e7b0.rlaxodus465.workers.dev/load?bj=${bj}`
+      )
 
-  const state = await res.json()
+      const data = await res.json()
+      console.log("서버에서 받은 데이터", data)
 
-  if (!state) return
+      // ⭐ 핵심
+      window.state = data
 
-  window.state = state
-  renderAll()
-}
+      renderAll()
+    }
 
-loadFromServer()
+    loadState()
+  </script>
 
-// 3초마다 자동 동기화 (송출용 핵심)
-setInterval(loadFromServer, 3000)
-</script>
-
+  <script src="/assets/js/render.js"></script>
 </body>
 </html>
