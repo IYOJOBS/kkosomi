@@ -3,60 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <title>빙고 설정</title>
-  <link rel="stylesheet" href="/assets/css/style.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/assets/css/style.css" />
 </head>
 <body>
-<label>
-  가로(cols)
-  <input id="input-cols" type="number" value="5">
-</label>
-<br>
 
-<label>
-  세로(rows)
-  <input id="input-rows" type="number" value="5">
-</label>
-<br>
+  <h2>빙고 설정</h2>
 
-<label>
-  셀 크기(px)
-  <input id="input-cell" type="number" value="120">
-</label>
-<br><br>
+  <label>
+    가로(cols)
+    <input id="set-cols" type="number" value="5" />
+  </label><br>
+
+  <label>
+    세로(rows)
+    <input id="set-rows" type="number" value="5" />
+  </label><br>
+
+  <label>
+    셀 크기(px)
+    <input id="set-cell" type="number" value="120" />
+  </label><br><br>
 
   <button id="btn-apply-settings">적용</button>
-  <h2>빙고 설정</h2>
-  <p>여기는 BJ 설정 페이지</p>
-  <p>view는 OBS에 넣는 주소</p>
 
-  <!-- 서버 저장 함수 -->
+  <hr>
+
+  <!-- ✅ 미리보기 영역 -->
+  <div id="bingo-wrap">
+    <div id="bingo-grid"></div>
+  </div>
+
+  <!-- JS -->
+  <script src="/assets/js/render.js"></script>
   <script src="/assets/js/action.js"></script>
 
-<script>
-  document
-    .getElementById("btn-apply-settings")
-    .addEventListener("click", () => {
+  <!-- 초기화 -->
+  <script>
+    // ⭐ 핵심: state를 먼저 만들어야 render가 됨
+    window.state = {
+      config: {
+        cols: 5,
+        rows: 5,
+        cellSize: 120
+      },
+      boards: [
+        {
+          cells: Array.from({ length: 25 }, () => ({
+            checked: false
+          }))
+        }
+      ],
+      currentIndex: 0
+    }
 
-      const cols = Number(document.getElementById("input-cols").value)
-      const rows = Number(document.getElementById("input-rows").value)
-      const cellSize = Number(document.getElementById("input-cell").value)
+    // 최초 1회 렌더
+    renderAll()
 
-      const state = {
-        config: { cols, rows, cellSize },
-        boards: [],
-        currentIndex: 0
-      }
+    // 적용 버튼
+    document
+      .getElementById("btn-apply-settings")
+      .addEventListener("click", () => {
+        const cols = Number(document.getElementById("set-cols").value)
+        const rows = Number(document.getElementById("set-rows").value)
+        const cellSize = Number(document.getElementById("set-cell").value)
 
-      // 🔥 이 줄 추가
-      const bj = new URLSearchParams(location.search).get("bj") || "jobs"
+        window.state.config = { cols, rows, cellSize }
 
-      // 🔥 이 줄 변경
-      saveToServer(state, bj)
+        const total = cols * rows
+        window.state.boards[0].cells =
+          Array.from({ length: total }, () => ({ checked: false }))
 
-      alert("서버에 저장됨")
-    })
-</script>
-
+        renderAll()
+      })
+  </script>
 
 </body>
 </html>
