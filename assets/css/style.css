@@ -59,3 +59,246 @@ body {
   width: 80%;
   height: auto;
 }
+/* ===== admin layout ===== */
+body.admin {
+  margin: 0;
+  background: #0b0f19;
+  color: #e9eefc;
+}
+
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.panel {
+  width: 380px;
+  min-width: 320px;
+  padding: 18px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(10px);
+}
+
+.panel-head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.brand-title {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.brand-sub {
+  opacity: 0.75;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  font-size: 12px;
+}
+
+.pill-strong {
+  font-weight: 800;
+}
+
+.save-indicator {
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.06);
+  opacity: 0.9;
+}
+.save-indicator.saving { background: rgba(255,255,255,0.10); }
+.save-indicator.saved { background: rgba(0,255,170,0.12); border-color: rgba(0,255,170,0.25); }
+.save-indicator.error { background: rgba(255,0,80,0.12); border-color: rgba(255,0,80,0.25); }
+
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.card-title {
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  opacity: 0.95;
+}
+
+.field input {
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.25);
+  color: #e9eefc;
+  padding: 0 10px;
+  outline: none;
+}
+
+.field input[type="color"] {
+  padding: 0;
+  height: 38px;
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn {
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: #e9eefc;
+  padding: 0 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.btn.primary {
+  background: rgba(120,140,255,0.18);
+  border-color: rgba(120,140,255,0.35);
+}
+
+.hint {
+  margin-top: 10px;
+  opacity: 0.75;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.stage {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+}
+
+.stage-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.stage-foot {
+  opacity: 0.75;
+  font-size: 12px;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.mono-strong {
+  font-weight: 800;
+}
+
+/* ===== bingo base ===== */
+.bingo-wrap {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.bingo-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: saturate(1.05);
+  opacity: 0.95;
+}
+
+.bingo-grid {
+  position: relative;
+  padding: 18px;
+}
+
+.bingo-cell {
+  position: relative;
+  background: rgba(255,255,255,0.92);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+  user-select: none;
+}
+
+.bingo-number {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-weight: 900;
+}
+
+.bingo-mission {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  white-space: pre-wrap;
+  font-weight: 700;
+  line-height: 1.25;
+  outline: none;
+  min-height: 18px;
+}
+
+.bingo-mission.placeholder::before {
+  content: "미션 입력";
+  opacity: 0.35;
+}
+
+.bingo-stamp {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.bingo-cell.checked .bingo-stamp {
+  display: flex;
+}
