@@ -2,88 +2,179 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>빙고 설정</title>
-
-  <!-- CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>꼬소미 빙고 설정</title>
   <link rel="stylesheet" href="/assets/css/style.css" />
 </head>
-<body>
 
-  <h2>빙고 설정</h2>
+<body class="admin">
+  <div class="admin-shell">
+    <!-- 좌측 설정 패널 -->
+    <aside class="panel">
+      <div class="panel-head">
+        <div class="brand">
+          <div class="brand-title">꼬소미 빙고</div>
+          <div class="brand-sub">설정은 여기서, 숫자/미션은 프리뷰에서</div>
+        </div>
 
-  <label>
-    가로(cols)
-    <input id="set-cols" type="number" value="5" />
-  </label><br>
+        <div class="row">
+          <div class="pill">
+            BJ
+            <span id="bj-badge" class="pill-strong">jobs</span>
+          </div>
+          <div id="save-indicator" class="save-indicator idle">저장 대기</div>
+        </div>
+      </div>
 
-  <label>
-    세로(rows)
-    <input id="set-rows" type="number" value="5" />
-  </label><br>
+      <div class="panel-body">
+        <section class="card">
+          <div class="card-title">레이아웃</div>
 
-  <label>
-    셀 크기(px)
-    <input id="set-cell" type="number" value="120" />
-  </label><br><br>
+          <div class="grid-2">
+            <label class="field">
+              <span>가로</span>
+              <input id="set-cols" type="number" min="1" max="12" value="5" />
+            </label>
 
-  <button id="btn-apply-settings">적용</button>
+            <label class="field">
+              <span>세로</span>
+              <input id="set-rows" type="number" min="1" max="12" value="5" />
+            </label>
 
-  <hr>
+            <label class="field">
+              <span>셀 크기</span>
+              <input id="set-cell" type="number" min="60" max="220" value="120" />
+            </label>
 
-  <!-- ✅ 미리보기 영역 -->
-  <div id="bingo-wrap">
-    <div id="bingo-grid"></div>
+            <label class="field">
+              <span>간격</span>
+              <input id="set-gap" type="number" min="0" max="40" value="12" />
+            </label>
+          </div>
+
+          <div class="btn-row">
+            <button id="btn-apply-settings" class="btn primary">적용하고 저장</button>
+            <button id="btn-reset-check" class="btn">체크만 초기화</button>
+          </div>
+
+          <div class="hint">
+            프리뷰에서 숫자 더블클릭 → 수정<br />
+            미션은 클릭 후 바로 입력 가능
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-title">텍스트 스타일</div>
+
+          <div class="grid-2">
+            <label class="field">
+              <span>숫자 크기</span>
+              <input id="set-num-size" type="number" min="10" max="48" value="18" />
+            </label>
+
+            <label class="field">
+              <span>숫자 색</span>
+              <input id="set-num-color" type="color" value="#111111" />
+            </label>
+
+            <label class="field">
+              <span>미션 크기</span>
+              <input id="set-mission-size" type="number" min="10" max="40" value="14" />
+            </label>
+
+            <label class="field">
+              <span>미션 색</span>
+              <input id="set-mission-color" type="color" value="#333333" />
+            </label>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-title">배경</div>
+
+          <label class="field">
+            <span>배경 이미지 URL</span>
+            <input id="set-bg-url" type="text" placeholder="https://.../image.png" />
+          </label>
+          <div class="hint">비워두면 배경 없음</div>
+        </section>
+
+        <section class="card">
+          <div class="card-title">스탬프</div>
+
+          <div class="grid-2">
+            <label class="field">
+              <span>스탬프 크기</span>
+              <input id="set-stamp-scale" type="number" min="30" max="140" value="85" />
+            </label>
+
+            <label class="field">
+              <span>스탬프 파일</span>
+              <input type="text" value="assets/img/stamp-kkosomi.png" disabled />
+            </label>
+          </div>
+        </section>
+      </div>
+    </aside>
+
+    <!-- 우측 프리뷰 -->
+    <main class="stage">
+      <div class="stage-inner">
+        <div id="bingo-wrap" class="bingo-wrap">
+          <div id="bingo-bg" class="bingo-bg"></div>
+          <div id="bingo-grid" class="bingo-grid"></div>
+        </div>
+
+        <div class="stage-foot">
+          <div class="mono">
+            송출 주소 예시
+            <span class="mono-strong">/bj/jobs/view?bj=jobs</span>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 
-  <!-- JS -->
-  <script src="/assets/js/render.js"></script>
   <script src="/assets/js/action.js"></script>
-
-  <!-- 초기화 -->
+  <script src="/assets/js/render.js"></script>
   <script>
-    // ⭐ 핵심: state를 먼저 만들어야 render가 됨
-    window.state = {
-      config: {
-        cols: 5,
-        rows: 5,
-        cellSize: 120
-      },
-      boards: [
-        {
-          cells: Array.from({ length: 25 }, () => ({
-            checked: false
-          }))
-        }
-      ],
-      currentIndex: 0
-    }
+    ;(async () => {
+      const params = new URLSearchParams(location.search)
+      const bj = params.get("bj") || "jobs"
+      document.getElementById("bj-badge").textContent = bj
 
-    // 최초 1회 렌더
-    renderAll()
+      // 서버에서 state 로드
+      const loaded = await loadFromServer(bj)
 
-    // 적용 버튼
-    document
-      .getElementById("btn-apply-settings")
-      .addEventListener("click", () => {
-        console.log("적용 버튼 클릭됨")
-        const cols = Number(document.getElementById("set-cols").value)
-        const rows = Number(document.getElementById("set-rows").value)
-        const cellSize = Number(document.getElementById("set-cell").value)
+      // 없으면 기본 생성
+      if (!loaded) {
+        window.state = makeDefaultState()
+        await saveToServer(window.state, bj)
+      }
 
-        window.state.config = { cols, rows, cellSize }
+      // UI 동기화 + 렌더
+      syncSettingsUI()
+      renderAll()
 
-        const total = cols * rows
-        window.state.boards[0].cells =
-          Array.from({ length: total }, () => ({ checked: false }))
+      // 적용하고 저장
+      document.getElementById("btn-apply-settings").addEventListener("click", async () => {
+        applySettingsFromUI(true)
+        await saveToServer(window.state, bj)
+        setSaveIndicator("saved")
+      })
 
+      // 체크만 초기화
+      document.getElementById("btn-reset-check").addEventListener("click", async () => {
+        const board = getBoard()
+        board.cells.forEach(c => (c.checked = false))
         renderAll()
-            // 🔥 여기부터 추가
-    const bj =
-      new URLSearchParams(location.search).get("bj") || "jobs"
+        await saveToServer(window.state, bj)
+        setSaveIndicator("saved")
+      })
 
-    saveToServer(window.state, bj)
-  })
+      // 설정 입력 변화는 즉시 프리뷰 반영만 하고 저장은 적용 버튼에서
+      wireLivePreviewInputs()
+    })()
   </script>
-
 </body>
 </html>
