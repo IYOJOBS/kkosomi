@@ -104,91 +104,84 @@ function renderBingoGrid() {
     cellEl.className = "bingo-cell" + (cell.checked ? " checked" : "")
     cellEl.dataset.index = String(idx)
 
-    // 숫자
-const num = document.createElement("div")
-num.className = "bingo-number"
-num.textContent = String(cell.number ?? "")
-num.style.fontSize = `${cfg.numberSize}px`
-num.style.color = cfg.numberColor
+    /* 숫자 */
+    const num = document.createElement("div")
+    num.className = "bingo-number"
+    num.textContent = String(cell.number ?? "")
+    num.style.fontSize = `${cfg.numberSize}px`
+    num.style.color = cfg.numberColor
 
-// 미션 래퍼 (숫자 아래 전용 영역)
-const missionWrap = document.createElement("div")
-missionWrap.className = "bingo-mission-wrap"
+    /* 미션 래퍼 */
+    const missionWrap = document.createElement("div")
+    missionWrap.className = "bingo-mission-wrap"
 
-// 미션
-const mission = document.createElement("div")
-mission.className = "bingo-mission"
-mission.textContent = cell.mission || ""
-mission.style.fontSize = `${cfg.missionSize}px`
-mission.style.color = cfg.missionColor
-if (!mission.textContent) mission.classList.add("placeholder")
+    /* 미션 */
+    const mission = document.createElement("div")
+    mission.className = "bingo-mission"
+    mission.textContent = cell.mission || ""
+    mission.style.fontSize = `${cfg.missionSize}px`
+    mission.style.color = cfg.missionColor
+    if (!mission.textContent) mission.classList.add("placeholder")
 
-missionWrap.appendChild(mission)
+    missionWrap.appendChild(mission)
 
-// append 순서 중요
-cellEl.appendChild(num)
-cellEl.appendChild(missionWrap)
-cellEl.appendChild(stamp)
-
-
+    /* 스탬프 */
     const stamp = document.createElement("div")
     stamp.className = "bingo-stamp"
+
     const img = document.createElement("img")
     img.src = "/assets/img/stamp-kkosomi.png"
     img.alt = "stamp"
     img.style.width = `${cfg.stampScale}%`
     stamp.appendChild(img)
 
+    /* append 순서 고정 */
     cellEl.appendChild(num)
-    cellEl.appendChild(mission)
+    cellEl.appendChild(missionWrap)
     cellEl.appendChild(stamp)
 
     if (isAdmin) {
-      // 숫자 더블클릭 → 모달
-      num.style.cursor = "pointer"
-      num.title = "더블클릭해서 숫자 변경"
+      /* 숫자 더블클릭 */
       num.addEventListener("dblclick", (e) => {
         e.preventDefault()
         e.stopPropagation()
-        e.stopImmediatePropagation()   // ⭐ 핵심
+        e.stopImmediatePropagation()
         openNumberModal(idx)
-        })
+      })
 
-
-      // 미션 편집
+      /* 미션 편집 */
       mission.contentEditable = "true"
       mission.spellcheck = false
-      mission.addEventListener("focus", () => mission.classList.remove("placeholder"))
+
+      mission.addEventListener("focus", () => {
+        mission.classList.remove("placeholder")
+      })
+
       mission.addEventListener("blur", () => {
         const v = (mission.textContent || "").trim()
         board.cells[idx].mission = v
         if (!v) mission.classList.add("placeholder")
       })
 
-      // 수동 체크 클릭
-      cellEl.addEventListener("click", async (e) => {
-        if (e.target.closest(".bingo-number")) return
-        if (e.target.closest(".bingo-mission")) return
-        if (e.target.closest(".bingo-number")) return
-
-
-        board.cells[idx].checked = !board.cells[idx].checked
-        renderAll()
-
-        const params = new URLSearchParams(location.search)
-        const bj = params.get("bj") || "jobs"
-        await saveToServer(window.state, bj)
-        setSaveIndicator("saved")
-      })
-
-      // 미션 Enter 저장
       mission.addEventListener("keydown", async (e) => {
         if (e.key !== "Enter") return
         e.preventDefault()
         mission.blur()
 
-        const params = new URLSearchParams(location.search)
-        const bj = params.get("bj") || "jobs"
+        const bj = new URLSearchParams(location.search).get("bj") || "jobs"
+        await saveToServer(window.state, bj)
+        setSaveIndicator("saved")
+      })
+
+      /* 셀 클릭 체크 */
+      cellEl.addEventListener("click", async (e) => {
+        if (e.target.closest(".bingo-number")) return
+        if (e.target.closest(".bingo-mission")) return
+
+        board.cells[idx].checked = !board.cells[idx].checked
+        renderAll()
+
+        const bj = new URLSearchParams(location.search).get("bj") || "jobs"
         await saveToServer(window.state, bj)
         setSaveIndicator("saved")
       })
