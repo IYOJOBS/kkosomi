@@ -104,18 +104,32 @@ function renderBingoGrid() {
     cellEl.className = "bingo-cell" + (cell.checked ? " checked" : "")
     cellEl.dataset.index = String(idx)
 
-    const num = document.createElement("div")
-    num.className = "bingo-number"
-    num.textContent = String(cell.number ?? "")
-    num.style.fontSize = `${cfg.numberSize}px`
-    num.style.color = cfg.numberColor
+    // 숫자
+const num = document.createElement("div")
+num.className = "bingo-number"
+num.textContent = String(cell.number ?? "")
+num.style.fontSize = `${cfg.numberSize}px`
+num.style.color = cfg.numberColor
 
-    const mission = document.createElement("div")
-    mission.className = "bingo-mission"
-    mission.textContent = cell.mission || ""
-    mission.style.fontSize = `${cfg.missionSize}px`
-    mission.style.color = cfg.missionColor
-    if (!mission.textContent) mission.classList.add("placeholder")
+// 미션 래퍼 (숫자 아래 전용 영역)
+const missionWrap = document.createElement("div")
+missionWrap.className = "bingo-mission-wrap"
+
+// 미션
+const mission = document.createElement("div")
+mission.className = "bingo-mission"
+mission.textContent = cell.mission || ""
+mission.style.fontSize = `${cfg.missionSize}px`
+mission.style.color = cfg.missionColor
+if (!mission.textContent) mission.classList.add("placeholder")
+
+missionWrap.appendChild(mission)
+
+// append 순서 중요
+cellEl.appendChild(num)
+cellEl.appendChild(missionWrap)
+cellEl.appendChild(stamp)
+
 
     const stamp = document.createElement("div")
     stamp.className = "bingo-stamp"
