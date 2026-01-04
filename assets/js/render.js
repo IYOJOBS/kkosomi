@@ -134,9 +134,12 @@ function renderBingoGrid() {
       num.style.cursor = "pointer"
       num.title = "더블클릭해서 숫자 변경"
       num.addEventListener("dblclick", (e) => {
+        e.preventDefault()
         e.stopPropagation()
+        e.stopImmediatePropagation()   // ⭐ 핵심
         openNumberModal(idx)
-      })
+        })
+
 
       // 미션 편집
       mission.contentEditable = "true"
@@ -150,8 +153,8 @@ function renderBingoGrid() {
 
       // 수동 체크 클릭
       cellEl.addEventListener("click", async (e) => {
+        if (e.target.closest(".bingo-number")) return
         if (e.target === mission) return
-        if (e.target === num) return
 
         board.cells[idx].checked = !board.cells[idx].checked
         renderAll()
