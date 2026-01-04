@@ -1,7 +1,63 @@
 console.log("render.js loaded")
 
+let editingCellIndex = null
+
+function openNumberModal(idx) {
+  editingCellIndex = idx
+  const modal = document.getElementById("num-modal")
+  const input = document.getElementById("num-modal-input")
+  const board = window.state.boards[window.state.currentIndex]
+  input.value = String(board.cells[idx].number ?? "")
+  modal.classList.remove("hidden")
+  input.focus()
+  input.select()
+}
+
+function closeNumberModal() {
+  const modal = document.getElementById("num-modal")
+  modal.classList.add("hidden")
+  editingCellIndex = null
+}
+
+function bindNumberModalEvents() {
+  const saveBtn = document.getElementById("num-modal-save")
+  const cancelBtn = document.getElementById("num-modal-cancel")
+  const backdrop = document.querySelector("#num-modal .modal-backdrop")
+  const input = document.getElementById("num-modal-input")
+
+  if (!saveBtn || saveBtn.dataset.bound) return
+  saveBtn.dataset.bound = "1"
+
+  cancelBtn.addEventListener("click", closeNumberModal)
+  backdrop.addEventListener("click", closeNumberModal)
+
+  saveBtn.addEventListener("click", async () => {
+    if (editingCellIndex === null) return
+    const v = Number(input.value)
+    if (Number.isNaN(v)) return
+
+    const board = window.state.boards[window.state.currentIndex]
+    board.cells[editingCellIndex].number = v
+
+    renderAll()
+
+    const params = new URLSearchParams(location.search)
+    const bj = params.get("bj") || "jobs"
+    await saveToServer(window.state, bj)
+    setSaveIndicator("saved")
+
+    closeNumberModal()
+  })
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeNumberModal()
+    if (e.key === "Enter") saveBtn.click()
+  })
+}
+
 function renderAll() {
   if (!window.state) return
+  bindNumberModalEvents()
   applyBackground()
   applyGridStyle()
   renderBingoGrid()
@@ -63,7 +119,6 @@ function renderBingoGrid() {
 
     const stamp = document.createElement("div")
     stamp.className = "bingo-stamp"
-
     const img = document.createElement("img")
     img.src = "/assets/img/stamp-kkosomi.png"
     img.alt = "stamp"
@@ -74,36 +129,30 @@ function renderBingoGrid() {
     cellEl.appendChild(mission)
     cellEl.appendChild(stamp)
 
-    // 관리자 프리뷰 편집
     if (isAdmin) {
-      // 미션은 클릭해서 바로 입력
+      // 숫자 더블클릭 → 모달
+      num.style.cursor = "pointer"
+      num.title = "더블클릭해서 숫자 변경"
+      num.addEventListener("dblclick", (e) => {
+        e.stopPropagation()
+        openNumberModal(idx)
+      })
+
+      // 미션 편집
       mission.contentEditable = "true"
       mission.spellcheck = false
-      mission.addEventListener("focus", () => {
-        mission.classList.remove("placeholder")
-      })
+      mission.addEventListener("focus", () => mission.classList.remove("placeholder"))
       mission.addEventListener("blur", () => {
         const v = (mission.textContent || "").trim()
         board.cells[idx].mission = v
         if (!v) mission.classList.add("placeholder")
       })
 
-      // 숫자는 더블클릭해서 prompt로 안전하게 변경
-      num.style.cursor = "pointer"
-      num.title = "더블클릭해서 숫자 변경"
-      num.addEventListener("dblclick", () => {
-        const next = prompt("이 칸 숫자", String(board.cells[idx].number ?? ""))
-        if (next === null) return
-        const n = Number(next)
-        if (Number.isNaN(n)) return
-        board.cells[idx].number = n
-        renderAll()
-      })
-
-      // 수동 체크는 클릭
+      // 수동 체크 클릭
       cellEl.addEventListener("click", async (e) => {
-        // 미션 편집 중 클릭은 무시
         if (e.target === mission) return
+        if (e.target === num) return
+
         board.cells[idx].checked = !board.cells[idx].checked
         renderAll()
 
@@ -113,17 +162,16 @@ function renderBingoGrid() {
         setSaveIndicator("saved")
       })
 
-      // 미션 편집 저장은 Enter 누를 때 저장
+      // 미션 Enter 저장
       mission.addEventListener("keydown", async (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault()
-          mission.blur()
+        if (e.key !== "Enter") return
+        e.preventDefault()
+        mission.blur()
 
-          const params = new URLSearchParams(location.search)
-          const bj = params.get("bj") || "jobs"
-          await saveToServer(window.state, bj)
-          setSaveIndicator("saved")
-        }
+        const params = new URLSearchParams(location.search)
+        const bj = params.get("bj") || "jobs"
+        await saveToServer(window.state, bj)
+        setSaveIndicator("saved")
       })
     }
 
