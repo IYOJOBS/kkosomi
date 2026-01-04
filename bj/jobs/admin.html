@@ -76,7 +76,12 @@
           Array.from({ length: total }, () => ({ checked: false }))
 
         renderAll()
-      })
+            // 🔥 여기부터 추가
+    const bj =
+      new URLSearchParams(location.search).get("bj") || "jobs"
+
+    saveToServer(window.state, bj)
+  })
   </script>
 
 </body>
