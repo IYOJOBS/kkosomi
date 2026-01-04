@@ -65,6 +65,7 @@
     document
       .getElementById("btn-apply-settings")
       .addEventListener("click", () => {
+        console.log("적용 버튼 클릭됨")
         const cols = Number(document.getElementById("set-cols").value)
         const rows = Number(document.getElementById("set-rows").value)
         const cellSize = Number(document.getElementById("set-cell").value)
