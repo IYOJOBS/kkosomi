@@ -168,7 +168,9 @@ cellEl.appendChild(stamp)
       // 수동 체크 클릭
       cellEl.addEventListener("click", async (e) => {
         if (e.target.closest(".bingo-number")) return
-        if (e.target === mission) return
+        if (e.target.closest(".bingo-mission")) return
+        if (e.target.closest(".bingo-number")) return
+
 
         board.cells[idx].checked = !board.cells[idx].checked
         renderAll()
