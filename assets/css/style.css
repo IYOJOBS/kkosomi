@@ -247,5 +247,11 @@ body.admin {
 }
 .bingo-number {
   pointer-events: auto;
+  z-index: 1;
+}
+
+.bingo-mission {
+  pointer-events: auto;
   z-index: 2;
 }
+
