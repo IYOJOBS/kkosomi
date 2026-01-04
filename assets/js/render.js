@@ -1,32 +1,65 @@
 console.log("render.js loaded")
 
 function renderAll() {
+  if (!window.state) return
+  applyBackground()
+  applyGridStyle()
+  renderBingoGrid()
+}
+
+function applyGridStyle() {
   const grid = document.getElementById("bingo-grid")
-  if (!grid || !window.state) return
+  const wrap = document.getElementById("bingo-wrap")
+  if (!grid || !wrap) return
 
-  const { cols, rows, cellSize } = window.state.config
+  const { cols, rows, cellSize, gap } = window.state.config
 
-  grid.innerHTML = ""
   grid.style.display = "grid"
   grid.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`
-  grid.style.gap = "12px"
+  grid.style.gridTemplateRows = `repeat(${rows}, ${cellSize}px)`
+  grid.style.gap = `${gap}px`
 
-  const total = cols * rows
+  const pad = 18
+  const w = cols * cellSize + (cols - 1) * gap + pad * 2
+  const h = rows * cellSize + (rows - 1) * gap + pad * 2
+  wrap.style.width = `${w}px`
+  wrap.style.height = `${h}px`
+}
 
-  for (let i = 1; i <= total; i++) {
-    const cell = document.createElement("div")
-    cell.className = "bingo-cell"
-    cell.dataset.index = i - 1
-    cell.style.width = cellSize + "px"
-    cell.style.height = cellSize + "px"
+function applyBackground() {
+  const bg = document.getElementById("bingo-bg")
+  if (!bg) return
+  const url = (window.state.config.backgroundUrl || "").trim()
+  bg.style.backgroundImage = url ? `url("${url}")` : "none"
+}
+
+function renderBingoGrid() {
+  const grid = document.getElementById("bingo-grid")
+  if (!grid) return
+
+  const board = window.state.boards[window.state.currentIndex]
+  const cfg = window.state.config
+  const isAdmin = document.body.classList.contains("admin")
+
+  grid.innerHTML = ""
+
+  board.cells.forEach((cell, idx) => {
+    const cellEl = document.createElement("div")
+    cellEl.className = "bingo-cell" + (cell.checked ? " checked" : "")
+    cellEl.dataset.index = String(idx)
 
     const num = document.createElement("div")
     num.className = "bingo-number"
-    num.textContent = i
+    num.textContent = String(cell.number ?? "")
+    num.style.fontSize = `${cfg.numberSize}px`
+    num.style.color = cfg.numberColor
 
     const mission = document.createElement("div")
     mission.className = "bingo-mission"
-    mission.textContent = ""
+    mission.textContent = cell.mission || ""
+    mission.style.fontSize = `${cfg.missionSize}px`
+    mission.style.color = cfg.missionColor
+    if (!mission.textContent) mission.classList.add("placeholder")
 
     const stamp = document.createElement("div")
     stamp.className = "bingo-stamp"
@@ -34,13 +67,66 @@ function renderAll() {
     const img = document.createElement("img")
     img.src = "/assets/img/stamp-kkosomi.png"
     img.alt = "stamp"
-
+    img.style.width = `${cfg.stampScale}%`
     stamp.appendChild(img)
 
-    cell.appendChild(num)
-    cell.appendChild(mission)
-    cell.appendChild(stamp)
+    cellEl.appendChild(num)
+    cellEl.appendChild(mission)
+    cellEl.appendChild(stamp)
 
-    grid.appendChild(cell)
-  }
+    // 관리자 프리뷰 편집
+    if (isAdmin) {
+      // 미션은 클릭해서 바로 입력
+      mission.contentEditable = "true"
+      mission.spellcheck = false
+      mission.addEventListener("focus", () => {
+        mission.classList.remove("placeholder")
+      })
+      mission.addEventListener("blur", () => {
+        const v = (mission.textContent || "").trim()
+        board.cells[idx].mission = v
+        if (!v) mission.classList.add("placeholder")
+      })
+
+      // 숫자는 더블클릭해서 prompt로 안전하게 변경
+      num.style.cursor = "pointer"
+      num.title = "더블클릭해서 숫자 변경"
+      num.addEventListener("dblclick", () => {
+        const next = prompt("이 칸 숫자", String(board.cells[idx].number ?? ""))
+        if (next === null) return
+        const n = Number(next)
+        if (Number.isNaN(n)) return
+        board.cells[idx].number = n
+        renderAll()
+      })
+
+      // 수동 체크는 클릭
+      cellEl.addEventListener("click", async (e) => {
+        // 미션 편집 중 클릭은 무시
+        if (e.target === mission) return
+        board.cells[idx].checked = !board.cells[idx].checked
+        renderAll()
+
+        const params = new URLSearchParams(location.search)
+        const bj = params.get("bj") || "jobs"
+        await saveToServer(window.state, bj)
+        setSaveIndicator("saved")
+      })
+
+      // 미션 편집 저장은 Enter 누를 때 저장
+      mission.addEventListener("keydown", async (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault()
+          mission.blur()
+
+          const params = new URLSearchParams(location.search)
+          const bj = params.get("bj") || "jobs"
+          await saveToServer(window.state, bj)
+          setSaveIndicator("saved")
+        }
+      })
+    }
+
+    grid.appendChild(cellEl)
+  })
 }
