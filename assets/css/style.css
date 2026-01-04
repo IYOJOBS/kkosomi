@@ -245,3 +245,7 @@ body.admin {
   justify-content: flex-end;
   margin-top: 12px;
 }
+.bingo-number {
+  pointer-events: auto;
+  z-index: 2;
+}
