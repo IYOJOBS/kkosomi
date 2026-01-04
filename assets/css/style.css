@@ -255,3 +255,36 @@ body.admin {
   z-index: 2;
 }
 
+/* 숫자 - 상단 중앙 */
+.bingo-number {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-weight: 900;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+/* 미션 래퍼 - 숫자 아래 */
+.bingo-mission-wrap {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  right: 12px;
+  transform: translateY(-10%);
+  z-index: 3;
+  pointer-events: auto;
+}
+
+/* 미션 입력 */
+.bingo-mission {
+  text-align: center;
+  white-space: pre-wrap;
+  font-weight: 800;
+  line-height: 1.25;
+  outline: none;
+  min-height: 20px;
+}
+
