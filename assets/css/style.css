@@ -292,26 +292,29 @@ body.admin {
   position: relative;
   width: 100%;
   height: 100%;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
+  padding: 12px;
 }
 
 .cell-number {
-  margin-top: 6px;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   line-height: 1;
   font-weight: 800;
-  cursor: pointer;
+  text-align: center;
+  user-select: none;
 }
 
 .cell-mission {
-  margin-top: auto;
-  margin-bottom: 8px;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
   text-align: center;
+  line-height: 1.2;
   outline: none;
-  cursor: text;
 }
 
 .cell-mission.placeholder {
@@ -324,7 +327,12 @@ body.admin {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 5;              /* 🔥 위로 */
+  z-index: 4;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
 }
 
+.bingo-cell.checked .cell-stamp {
+  opacity: 1;
+}
