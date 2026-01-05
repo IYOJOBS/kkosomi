@@ -336,3 +336,53 @@ body.admin {
 .bingo-cell.checked .cell-stamp {
   opacity: 1;
 }
+.bingo-cell {
+  position: relative;
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.cell-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 숫자: 위 중앙 */
+.bingo-number {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 700;
+  line-height: 1;
+  z-index: 2;
+}
+
+/* 미션: 숫자 아래 중앙 */
+.bingo-mission {
+  position: absolute;
+  top: 52px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  text-align: center;
+  z-index: 2;
+  outline: none;
+}
+
+/* 스탬프: 셀 정중앙 */
+.bingo-stamp {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.bingo-cell:not(.checked) .bingo-stamp {
+  display: none;
+}
