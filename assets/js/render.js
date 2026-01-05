@@ -123,112 +123,70 @@ function renderBingoGrid() {
   const grid = document.getElementById("bingo-grid")
   if (!grid) return
 
-  const board = getBoard()
-  const cfg = board.config
+  const board = window.state.boards[window.state.currentIndex]
+  const cfg = window.state.config
+  const isAdmin = document.body.classList.contains("admin")
 
   grid.innerHTML = ""
 
   board.cells.forEach((cell, idx) => {
     const cellEl = document.createElement("div")
     cellEl.className = "bingo-cell" + (cell.checked ? " checked" : "")
-    cellEl.dataset.index = String(idx)
+
+    const inner = document.createElement("div")
+    inner.className = "cell-inner"
 
     // 숫자
     const num = document.createElement("div")
     num.className = "bingo-number"
-    num.textContent = cell.number === undefined || cell.number === null ? "" : String(cell.number)
-    num.style.fontSize = `${cfg.numberSize}px`
+    num.textContent = cell.number ?? ""
+    num.style.fontSize = cfg.numberSize + "px"
     num.style.color = cfg.numberColor
 
-    // 미션
+    // 미션 (숫자 아래)
     const mission = document.createElement("div")
     mission.className = "bingo-mission"
-    mission.textContent = (cell.mission || "").trim()
-    mission.style.fontSize = `${cfg.missionSize}px`
+    mission.textContent = cell.mission || ""
+    mission.style.fontSize = cfg.missionSize + "px"
     mission.style.color = cfg.missionColor
+    mission.contentEditable = isAdmin
+    mission.spellcheck = false
 
-    // 미션 비어있으면 아예 숨김 (요구사항)
-    if (!mission.textContent) {
-      mission.style.display = "none"
-    }
-
-    // 스탬프 (항상 최상단, 클릭 방해 x)
+    // 스탬프 (중앙)
     const stamp = document.createElement("div")
     stamp.className = "bingo-stamp"
-    stamp.style.pointerEvents = "none"
-    stamp.style.position = "absolute"
-    stamp.style.inset = "0"
-    stamp.style.display = cell.checked ? "grid" : "none"
-    stamp.style.placeItems = "center"
-    stamp.style.zIndex = "10"
-
     const img = document.createElement("img")
     img.src = "/assets/img/stamp-kkosomi.png"
-    img.alt = "stamp"
-    img.style.width = `${cfg.stampScale}%`
-    img.style.height = "auto"
+    img.style.width = cfg.stampScale + "%"
     stamp.appendChild(img)
 
-    // 셀 내부 레이아웃 안정화
-    cellEl.style.position = "relative"
-    cellEl.style.display = "grid"
-    cellEl.style.gridTemplateRows = "1fr auto"
-    cellEl.style.alignItems = "center"
-    cellEl.style.justifyItems = "center"
-    cellEl.style.padding = "10px"
-    cellEl.style.boxSizing = "border-box"
+    inner.appendChild(num)
+    inner.appendChild(mission)
+    inner.appendChild(stamp)
+    cellEl.appendChild(inner)
 
-    // 숫자 중앙 고정
-    num.style.display = "grid"
-    num.style.placeItems = "center"
-    num.style.lineHeight = "1"
-    num.style.width = "100%"
-    num.style.userSelect = "none"
-    num.style.zIndex = "2"
+    if (isAdmin) {
+      // 숫자 수정
+      num.addEventListener("dblclick", (e) => {
+        e.stopPropagation()
+        openNumberModal(idx)
+      })
 
-    // 미션은 아래 쪽에만
-    mission.style.width = "100%"
-    mission.style.textAlign = "center"
-    mission.style.marginTop = "6px"
-    mission.style.wordBreak = "break-word"
-    mission.style.zIndex = "2"
+      // 미션 저장
+      mission.addEventListener("blur", async () => {
+        cell.mission = mission.textContent.trim()
+        await saveToServer(window.state, getBJ())
+      })
 
-    cellEl.appendChild(num)
-    cellEl.appendChild(mission)
-    cellEl.appendChild(stamp)
-
-    // 관리자에서만 편집/체크 가능 (OBS view는 표시용)
-    if (isAdmin()) {
-      // 클릭 = 체크 토글 (해제도 됨)
+      // 체크 토글
       cellEl.addEventListener("click", async () => {
         cell.checked = !cell.checked
         renderAll()
-
-        // 다 채우면 새 보드 자동 생성
-        if (isBoardComplete(board)) {
-          window.state.boards.push(makeNewBoard(board.config))
-          window.state.currentIndex = window.state.boards.length - 1
-          syncSettingsUI()
-          renderAll()
-        }
-
-        const bj = getBjFromUrl()
-        try {
-          await saveToServer(window.state, bj)
-        } catch (e) {
-          console.error(e)
-          setSaveIndicator("error")
-        }
-      })
-
-      // 더블클릭 = 숫자+미션 편집 모달
-      cellEl.addEventListener("dblclick", (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        openEditModal(idx)
+        await saveToServer(window.state, getBJ())
       })
     }
 
     grid.appendChild(cellEl)
   })
 }
+
