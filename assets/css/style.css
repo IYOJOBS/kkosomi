@@ -288,3 +288,39 @@ body.admin {
   min-height: 20px;
 }
 
+.cell-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.cell-number {
+  flex: 0 0 auto;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cell-mission {
+  flex: 0 0 auto;
+  text-align: center;
+  outline: none;
+  cursor: text;
+}
+
+.cell-mission.placeholder {
+  opacity: 0.35;
+}
+
+.cell-stamp {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
