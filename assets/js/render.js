@@ -122,10 +122,8 @@ function renderBingoGrid() {
     /* 미션 */
     const mission = document.createElement("div")
     mission.className = "cell-mission"
-    mission.textContent = cell.mission || "미션 입력"
     mission.style.fontSize = `${cfg.missionSize}px`
     mission.style.color = cfg.missionColor
-    if (!cell.mission) mission.classList.add("placeholder")
 
     inner.appendChild(num)
     inner.appendChild(mission)
@@ -153,22 +151,6 @@ function renderBingoGrid() {
       mission.contentEditable = "true"
       mission.spellcheck = false
 
-      mission.addEventListener("focus", () => {
-        if (mission.classList.contains("placeholder")) {
-          mission.textContent = ""
-          mission.classList.remove("placeholder")
-        }
-      })
-
-      mission.addEventListener("blur", async () => {
-        cell.mission = mission.textContent.trim()
-        if (!cell.mission) {
-          mission.textContent = "미션 입력"
-          mission.classList.add("placeholder")
-        }
-        const bj = new URLSearchParams(location.search).get("bj") || "jobs"
-        await saveToServer(window.state, bj)
-      })
 
       // ✅ 수동 체크는 빈 영역만
       cellEl.addEventListener("click", async (e) => {
