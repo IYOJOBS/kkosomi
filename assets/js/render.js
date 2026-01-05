@@ -102,91 +102,81 @@ function renderBingoGrid() {
   board.cells.forEach((cell, idx) => {
     const cellEl = document.createElement("div")
     cellEl.className = "bingo-cell" + (cell.checked ? " checked" : "")
-    cellEl.dataset.index = String(idx)
 
-    /* 숫자 */
+    // 내부 고정 레이아웃
+    const inner = document.createElement("div")
+    inner.className = "cell-inner"
+
+    // 숫자
     const num = document.createElement("div")
-    num.className = "bingo-number"
-    num.textContent = String(cell.number ?? "")
+    num.className = "cell-number"
+    num.textContent = cell.number ?? ""
     num.style.fontSize = `${cfg.numberSize}px`
     num.style.color = cfg.numberColor
 
-    /* 미션 래퍼 */
-    const missionWrap = document.createElement("div")
-    missionWrap.className = "bingo-mission-wrap"
-
-    /* 미션 */
+    // 미션
     const mission = document.createElement("div")
-    mission.className = "bingo-mission"
-    mission.textContent = cell.mission || ""
+    mission.className = "cell-mission"
+    mission.textContent = cell.mission || "미션 입력"
     mission.style.fontSize = `${cfg.missionSize}px`
     mission.style.color = cfg.missionColor
-    if (!mission.textContent) mission.classList.add("placeholder")
+    if (!cell.mission) mission.classList.add("placeholder")
 
-    missionWrap.appendChild(mission)
+    inner.appendChild(num)
+    inner.appendChild(mission)
 
-    /* 스탬프 */
+    // 스탬프
     const stamp = document.createElement("div")
-    stamp.className = "bingo-stamp"
-
+    stamp.className = "cell-stamp"
     const img = document.createElement("img")
     img.src = "/assets/img/stamp-kkosomi.png"
-    img.alt = "stamp"
     img.style.width = `${cfg.stampScale}%`
     stamp.appendChild(img)
 
-    /* append 순서 고정 */
-    cellEl.appendChild(num)
-    cellEl.appendChild(missionWrap)
+    cellEl.appendChild(inner)
     cellEl.appendChild(stamp)
 
+    /* ===== 관리자 전용 ===== */
     if (isAdmin) {
-      /* 숫자 더블클릭 */
-      num.addEventListener("dblclick", (e) => {
-        e.preventDefault()
+      // 숫자 클릭 → 숫자+미션 같이 수정
+      num.addEventListener("click", (e) => {
         e.stopPropagation()
-        e.stopImmediatePropagation()
         openNumberModal(idx)
       })
 
-      /* 미션 편집 */
+      // 미션 편집
       mission.contentEditable = "true"
       mission.spellcheck = false
 
       mission.addEventListener("focus", () => {
-        mission.classList.remove("placeholder")
+        if (mission.classList.contains("placeholder")) {
+          mission.textContent = ""
+          mission.classList.remove("placeholder")
+        }
       })
 
-      mission.addEventListener("blur", () => {
-        const v = (mission.textContent || "").trim()
-        board.cells[idx].mission = v
-        if (!v) mission.classList.add("placeholder")
-      })
-
-      mission.addEventListener("keydown", async (e) => {
-        if (e.key !== "Enter") return
-        e.preventDefault()
-        mission.blur()
+      mission.addEventListener("blur", async () => {
+        cell.mission = mission.textContent.trim()
+        if (!cell.mission) {
+          mission.textContent = "미션 입력"
+          mission.classList.add("placeholder")
+        }
 
         const bj = new URLSearchParams(location.search).get("bj") || "jobs"
         await saveToServer(window.state, bj)
-        setSaveIndicator("saved")
       })
 
-      /* 셀 클릭 체크 */
-      cellEl.addEventListener("click", async (e) => {
-        if (e.target.closest(".bingo-number")) return
-        if (e.target.closest(".bingo-mission")) return
-
-        board.cells[idx].checked = !board.cells[idx].checked
+      // 수동 체크
+      cellEl.addEventListener("click", async () => {
+        cell.checked = !cell.checked
         renderAll()
 
         const bj = new URLSearchParams(location.search).get("bj") || "jobs"
         await saveToServer(window.state, bj)
-        setSaveIndicator("saved")
       })
     }
 
     grid.appendChild(cellEl)
   })
 }
+
