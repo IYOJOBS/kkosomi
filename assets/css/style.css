@@ -448,3 +448,57 @@ body.admin {
 .bingo-cell:not(.checked) .bingo-stamp {
   display: none;
 }
+
+.bingo-cell {
+  position: relative;
+  overflow: hidden;
+}
+
+.cell-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 숫자: 셀 위 중앙 */
+.bingo-number {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  line-height: 1;
+  font-weight: 700;
+  z-index: 2;
+}
+
+/* 미션: 숫자 아래 */
+.bingo-mission {
+  position: absolute;
+  top: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  text-align: center;
+  line-height: 1.2;
+  z-index: 2;
+}
+
+.bingo-mission:empty {
+  display: none;
+}
+
+/* 스탬프: 셀 정중앙 */
+.bingo-stamp {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.bingo-cell:not(.checked) .bingo-stamp {
+  display: none;
+}
+
