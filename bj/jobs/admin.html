@@ -1,232 +1,202 @@
-<!-- bj/jobs/admin.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>꼬소미 빙고 설정</title>
+  <title>꼬소미 빙고 관리자</title>
   <link rel="stylesheet" href="/assets/css/style.css" />
 </head>
 
 <body class="admin">
 
-  <!-- 숫자+미션 통합 수정 모달 -->
-  <div id="edit-modal" class="modal hidden">
-    <div class="modal-backdrop"></div>
-    <div class="modal-card" style="max-width:520px;width:92vw;box-sizing:border-box;">
-      <div class="modal-title">수정</div>
+<!-- 숫자 + 미션 수정 모달 -->
+<div id="num-modal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <div class="modal-title">수정</div>
 
-      <div style="display:grid;gap:10px;">
-        <input id="edit-modal-number" type="number" class="modal-input" placeholder="숫자" style="width:100%;box-sizing:border-box;" />
-        <textarea id="edit-modal-mission" class="modal-input" placeholder="미션" rows="4" style="width:100%;resize:none;box-sizing:border-box;"></textarea>
-        <div style="font-size:12px;opacity:.7;">Enter 저장은 아니고 Ctrl+Enter로 저장 가능</div>
-      </div>
+    <input
+      id="num-modal-input"
+      type="number"
+      class="modal-input"
+      placeholder="숫자"
+    />
 
-      <div class="modal-actions">
-        <button id="edit-modal-cancel" class="btn">취소</button>
-        <button id="edit-modal-save" class="btn primary">저장</button>
-      </div>
+    <input
+      id="mission-modal-input"
+      type="text"
+      class="modal-input"
+      placeholder="미션 (선택)"
+    />
+
+    <div class="modal-hint">
+      Enter ❌ / Ctrl+Enter 저장
+    </div>
+
+    <div class="modal-actions">
+      <button id="num-modal-cancel" class="btn">취소</button>
+      <button id="num-modal-save" class="btn primary">저장</button>
     </div>
   </div>
+</div>
 
-  <div class="admin-shell">
-    <aside class="panel">
-      <div class="panel-head">
-        <div class="brand">
-          <div class="brand-title">꼬소미 빙고</div>
-          <div class="brand-sub">설정은 여기서, 숫자/미션은 프리뷰에서</div>
-        </div>
+<div class="admin-shell">
 
-        <div class="row">
-          <div class="pill">
-            BJ
-            <span id="bj-badge" class="pill-strong">jobs</span>
-          </div>
-          <div id="save-indicator" class="save-indicator idle">저장 대기</div>
-        </div>
+  <!-- 좌측 설정 -->
+  <aside class="panel">
+    <h2>꼬소미 빙고</h2>
+    <div class="sub">설정은 여기, 숫자/미션은 프리뷰</div>
+
+    <section class="card">
+      <div class="card-title">레이아웃</div>
+
+      <div class="grid-2">
+        <label>가로
+          <input id="set-cols" type="number" min="1" max="12" />
+        </label>
+
+        <label>세로
+          <input id="set-rows" type="number" min="1" max="12" />
+        </label>
+
+        <label>셀 크기
+          <input id="set-cell" type="number" min="60" max="220" />
+        </label>
+
+        <label>간격
+          <input id="set-gap" type="number" min="0" max="40" />
+        </label>
       </div>
 
-      <div class="panel-body">
-        <section class="card">
-          <div class="card-title">레이아웃</div>
+      <button id="btn-apply-settings" class="btn primary">
+        적용하고 저장
+      </button>
 
-          <div class="grid-2">
-            <label class="field">
-              <span>가로</span>
-              <input id="set-cols" type="number" min="1" max="12" value="4" />
-            </label>
+      <button id="btn-reset-check" class="btn">
+        체크만 초기화
+      </button>
 
-            <label class="field">
-              <span>세로</span>
-              <input id="set-rows" type="number" min="1" max="12" value="4" />
-            </label>
+      <button id="btn-reset-all" class="btn danger">
+        전체 초기화
+      </button>
+    </section>
 
-            <label class="field">
-              <span>셀 크기</span>
-              <input id="set-cell" type="number" min="60" max="220" value="130" />
-            </label>
+    <section class="card">
+      <div class="card-title">텍스트 스타일</div>
 
-            <label class="field">
-              <span>간격</span>
-              <input id="set-gap" type="number" min="0" max="40" value="10" />
-            </label>
-          </div>
+      <div class="grid-2">
+        <label>숫자 크기
+          <input id="set-num-size" type="number" />
+        </label>
 
-          <div class="btn-row">
-            <button id="btn-apply-settings" class="btn primary">적용하고 저장</button>
-            <button id="btn-reset-check" class="btn">체크만 초기화</button>
-          </div>
+        <label>숫자 색
+          <input id="set-num-color" type="color" />
+        </label>
 
-          <div class="btn-row">
-            <button id="btn-prev-board" class="btn">이전</button>
-            <button id="btn-next-board" class="btn">다음</button>
-            <button id="btn-add-board" class="btn">새 빙고판</button>
-            <button id="btn-reset-all" class="btn">전체 초기화</button>
-          </div>
+        <label>미션 크기
+          <input id="set-mission-size" type="number" />
+        </label>
 
-          <div class="row" style="justify-content:space-between;margin-top:10px;">
-            <div class="hint">
-              셀 더블클릭 → 숫자+미션 수정<br />
-              셀 클릭 → 체크 토글
-            </div>
-            <div id="board-indicator" class="pill">1 / 1</div>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="card-title">텍스트 스타일</div>
-
-          <div class="grid-2">
-            <label class="field">
-              <span>숫자 크기</span>
-              <input id="set-num-size" type="number" min="10" max="60" value="40" />
-            </label>
-
-            <label class="field">
-              <span>숫자 색</span>
-              <input id="set-num-color" type="color" value="#111111" />
-            </label>
-
-            <label class="field">
-              <span>미션 크기</span>
-              <input id="set-mission-size" type="number" min="8" max="40" value="10" />
-            </label>
-
-            <label class="field">
-              <span>미션 색</span>
-              <input id="set-mission-color" type="color" value="#333333" />
-            </label>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="card-title">배경</div>
-
-          <label class="field">
-            <span>배경 이미지 URL</span>
-            <input id="set-bg-url" type="text" placeholder="https://.../image.png" />
-          </label>
-          <div class="hint">비워두면 배경 없음</div>
-        </section>
-
-        <section class="card">
-          <div class="card-title">스탬프</div>
-
-          <div class="grid-2">
-            <label class="field">
-              <span>스탬프 크기</span>
-              <input id="set-stamp-scale" type="number" min="30" max="140" value="85" />
-            </label>
-
-            <label class="field">
-              <span>스탬프 파일</span>
-              <input type="text" value="assets/img/stamp-kkosomi.png" disabled />
-            </label>
-          </div>
-        </section>
+        <label>미션 색
+          <input id="set-mission-color" type="color" />
+        </label>
       </div>
-    </aside>
+    </section>
 
-    <main class="stage">
-      <div class="stage-inner">
-        <div id="bingo-wrap" class="bingo-wrap">
-          <div id="bingo-bg" class="bingo-bg"></div>
-          <div id="bingo-grid" class="bingo-grid"></div>
-        </div>
+    <section class="card">
+      <div class="card-title">배경</div>
+      <input id="set-bg-url" type="text" placeholder="https://image.png" />
+    </section>
 
-        <div class="stage-foot">
-          <div class="mono">
-            송출 주소 예시
-            <span class="mono-strong">/bj/jobs/view?bj=jobs</span>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
+    <section class="card">
+      <div class="card-title">스탬프</div>
+      <label>크기
+        <input id="set-stamp-scale" type="number" />
+      </label>
+    </section>
+  </aside>
 
-  <script src="/assets/js/action.js"></script>
-  <script src="/assets/js/render.js"></script>
+  <!-- 프리뷰 -->
+  <main class="stage">
+    <div id="bingo-wrap">
+      <div id="bingo-bg"></div>
+      <div id="bingo-grid"></div>
+    </div>
 
-  <script>
-    ;(async () => {
-      const bj = getBjFromUrl()
-      document.getElementById("bj-badge").textContent = bj
+    <div class="stage-foot">
+      송출 주소 예시:
+      <strong>/bj/jobs/view?bj=jobs</strong>
+    </div>
+  </main>
 
-      let loaded = null
-      try {
-        loaded = await loadFromServer(bj)
-      } catch (e) {
-        console.error(e)
+</div>
+
+<script src="/assets/js/action.js"></script>
+<script src="/assets/js/render.js"></script>
+
+<script>
+(async () => {
+  const params = new URLSearchParams(location.search)
+  const bj = params.get("bj") || "jobs"
+
+  // 🔥 기본 state (에러 원인 해결 핵심)
+  window.state = {
+    config: {
+      cols: 4,
+      rows: 4,
+      cellSize: 130,
+      gap: 10,
+
+      numberSize: 40,
+      numberColor: "#111111",
+      missionSize: 14,
+      missionColor: "#333333",
+
+      stampScale: 85,
+      backgroundUrl: ""
+    },
+    boards: [
+      {
+        cells: Array.from({ length: 16 }, (_, i) => ({
+          number: i + 1,
+          mission: "",
+          checked: false
+        }))
       }
+    ],
+    currentIndex: 0
+  }
 
-      if (!loaded || typeof loaded !== "object" || !Array.isArray(loaded.boards)) {
-        window.state = makeDefaultState()
-        try { await saveToServer(window.state, bj) } catch (e) {}
-      } else {
-        window.state = loaded
-      }
+  // 서버 데이터 로드
+  const loaded = await loadFromServer(bj)
+  if (loaded) window.state = loaded
+  else await saveToServer(window.state, bj)
 
-      // 혹시 구버전 state면 보정
-      if (!window.state.boards?.length) window.state = makeDefaultState()
-      if (typeof window.state.currentIndex !== "number") window.state.currentIndex = 0
-      if (!getBoard().config) getBoard().config = makeDefaultConfig()
+  syncSettingsUI()
+  renderAll()
 
-      syncSettingsUI()
-      renderAll()
+  document.getElementById("btn-apply-settings").onclick = async () => {
+    applySettingsFromUI()
+    await saveToServer(window.state, bj)
+  }
 
-      // 적용하고 저장
-      document.getElementById("btn-apply-settings").addEventListener("click", async () => {
-        applySettingsFromUI()
-        renderAll()
-        try {
-          await saveToServer(window.state, bj)
-        } catch (e) {
-          console.error(e)
-          setSaveIndicator("error")
-        }
-      })
+  document.getElementById("btn-reset-check").onclick = async () => {
+    window.state.boards.forEach(b =>
+      b.cells.forEach(c => c.checked = false)
+    )
+    renderAll()
+    await saveToServer(window.state, bj)
+  }
 
-      // 체크만 초기화
-      document.getElementById("btn-reset-check").addEventListener("click", async () => {
-        resetCheckOnly()
-        try { await saveToServer(window.state, bj) } catch (e) { setSaveIndicator("error") }
-      })
+  document.getElementById("btn-reset-all").onclick = async () => {
+    if (!confirm("전체 초기화 할까요?")) return
+    window.state.boards = [makeDefaultBoard()]
+    window.state.currentIndex = 0
+    renderAll()
+    await saveToServer(window.state, bj)
+  }
+})()
+</script>
 
-      // 보드 이동/추가/전체초기화
-      document.getElementById("btn-prev-board").addEventListener("click", () => goPrevBoard())
-      document.getElementById("btn-next-board").addEventListener("click", () => goNextBoard())
-      document.getElementById("btn-add-board").addEventListener("click", async () => {
-        addNewBoard()
-        try { await saveToServer(window.state, bj) } catch (e) { setSaveIndicator("error") }
-      })
-      document.getElementById("btn-reset-all").addEventListener("click", async () => {
-        resetAllBoards()
-        try { await saveToServer(window.state, bj) } catch (e) { setSaveIndicator("error") }
-      })
-
-      // 입력 즉시 프리뷰 반영
-      wireLivePreviewInputs()
-    })()
-  </script>
 </body>
 </html>
