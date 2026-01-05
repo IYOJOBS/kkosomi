@@ -386,3 +386,65 @@ body.admin {
 .bingo-cell:not(.checked) .bingo-stamp {
   display: none;
 }
+/* 셀 안에서 숫자 위, 미션 아래, 스탬프 중앙 고정 */
+.bingo-cell {
+  position: relative;
+  overflow: hidden;
+}
+
+.bingo-cell .cell-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  align-items: start;
+  justify-items: center;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+/* 숫자: 위쪽 중앙, 살짝 위로 */
+.bingo-number {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-2px);
+  user-select: none;
+  text-align: center;
+  width: 100%;
+  z-index: 2;
+}
+
+/* 미션: 숫자 아래로 확실히 내려가게 */
+.bingo-mission {
+  margin-top: 8px;
+  line-height: 1.2;
+  width: 92%;
+  text-align: center;
+  word-break: break-word;
+  z-index: 2;
+}
+
+/* 빈 미션은 아예 안보이게 */
+.bingo-mission:empty {
+  display: none;
+}
+
+/* 스탬프: 셀 정중앙 고정 */
+.bingo-stamp {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* 체크 안되면 스탬프 숨김 */
+.bingo-cell:not(.checked) .bingo-stamp {
+  display: none;
+}
