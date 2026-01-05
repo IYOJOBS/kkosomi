@@ -463,7 +463,7 @@ body.admin {
 /* 숫자: 셀 위 중앙 */
 .bingo-number {
   position: absolute;
-  top: 10px;
+  top: 5px;
   left: 50%;
   transform: translateX(-50%);
   line-height: 1;
