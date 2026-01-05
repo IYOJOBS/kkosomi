@@ -8,25 +8,6 @@ body {
   place-content: center;
 }
 
-/* 빙고 셀 */
-.bingo-cell {
-  background: #ffffff;
-  border-radius: 18px;
-  position: relative;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
-  overflow: hidden;
-  cursor: pointer;
-}
-
-/* 숫자 */
-.bingo-number {
-  position: absolute;
-  top: 10px;
-  left: 12px;
-  font-size: 15px;
-  font-weight: 700;
-  color: #111;
-}
 
 /* 미션 텍스트 */
 .bingo-mission {
@@ -41,18 +22,6 @@ body {
   font-weight: 600;
   color: #111;
   word-break: keep-all;
-}
-.bingo-stamp {
-  position: absolute;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.bingo-cell.checked .bingo-stamp {
-  display: flex;
 }
 
 .bingo-stamp img {
@@ -145,55 +114,12 @@ body.admin {
   padding: 18px;
 }
 
-.bingo-cell {
-  position: relative;
-  background: rgba(255,255,255,0.94);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.22);
-  user-select: none;
-}
 
-/* 숫자 가운데 */
-.bingo-number {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-}
 
-/* 미션은 아래 */
-.bingo-mission {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
-  text-align: center;
-  white-space: pre-wrap;
-  font-weight: 800;
-  line-height: 1.25;
-  outline: none;
-  min-height: 18px;
-}
 
 .bingo-mission.placeholder::before {
   content: "미션 입력";
   opacity: 0.35;
-}
-
-.bingo-stamp {
-  position: absolute;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.bingo-cell.checked .bingo-stamp {
-  display: flex;
 }
 
 /* 모달 */
@@ -245,152 +171,7 @@ body.admin {
   justify-content: flex-end;
   margin-top: 12px;
 }
-.bingo-number {
-  pointer-events: auto;
-  z-index: 1;
-}
 
-.bingo-mission {
-  pointer-events: auto;
-  z-index: 2;
-}
-
-/* 숫자 - 상단 중앙 */
-.bingo-number {
-  position: absolute;
-  top: 10px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-weight: 900;
-  z-index: 2;
-  pointer-events: auto;
-}
-
-/* 미션 래퍼 - 숫자 아래 */
-.bingo-mission-wrap {
-  position: absolute;
-  top: 65%;
-  left: 12px;
-  right: 12px;
-  transform: translateY(-10%);
-  z-index: 3;
-  pointer-events: auto;
-}
-
-/* 미션 입력 */
-.bingo-mission {
-  text-align: center;
-  white-space: pre-wrap;
-  font-weight: 800;
-  line-height: 1.25;
-  outline: none;
-  min-height: 20px;
-}
-
-.cell-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  padding: 12px;
-}
-
-.cell-number {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  line-height: 1;
-  font-weight: 800;
-  text-align: center;
-  user-select: none;
-}
-
-.cell-mission {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  text-align: center;
-  line-height: 1.2;
-  outline: none;
-}
-
-.cell-mission.placeholder {
-  opacity: 0.35;
-}
-
-.cell-stamp {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 4;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.bingo-cell.checked .cell-stamp {
-  opacity: 1;
-}
-.bingo-cell {
-  position: relative;
-  background: #fff;
-  border-radius: 18px;
-  overflow: hidden;
-}
-
-.cell-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-/* 숫자: 위 중앙 */
-.bingo-number {
-  position: absolute;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-weight: 700;
-  line-height: 1;
-  z-index: 2;
-}
-
-/* 미션: 숫자 아래 중앙 */
-.bingo-mission {
-  position: absolute;
-  top: 52px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  text-align: center;
-  z-index: 2;
-  outline: none;
-}
-
-/* 스탬프: 셀 정중앙 */
-.bingo-stamp {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 3;
-}
-
-.bingo-cell:not(.checked) .bingo-stamp {
-  display: none;
-}
-/* 셀 안에서 숫자 위, 미션 아래, 스탬프 중앙 고정 */
-.bingo-cell {
-  position: relative;
-  overflow: hidden;
-}
 
 .bingo-cell .cell-inner {
   position: relative;
@@ -403,85 +184,42 @@ body.admin {
   padding: 12px;
   box-sizing: border-box;
 }
-
-/* 숫자: 위쪽 중앙, 살짝 위로 */
-.bingo-number {
-  margin: 0;
-  padding: 0;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: translateY(-2px);
-  user-select: none;
-  text-align: center;
-  width: 100%;
-  z-index: 2;
-}
-
-/* 미션: 숫자 아래로 확실히 내려가게 */
-.bingo-mission {
-  margin-top: 8px;
-  line-height: 1.2;
-  width: 92%;
-  text-align: center;
-  word-break: break-word;
-  z-index: 2;
-}
-
-/* 빈 미션은 아예 안보이게 */
-.bingo-mission:empty {
-  display: none;
-}
-
-/* 스탬프: 셀 정중앙 고정 */
-.bingo-stamp {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  pointer-events: none;
-  z-index: 10;
-}
-
-/* 체크 안되면 스탬프 숨김 */
-.bingo-cell:not(.checked) .bingo-stamp {
-  display: none;
-}
-
+/* ===== 빙고 셀 (최종 단일 정의) ===== */
 .bingo-cell {
   position: relative;
+  background: #fff;
+  border-radius: 18px;
   overflow: hidden;
 }
 
-.cell-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-/* 숫자: 셀 위 중앙 */
+/* 숫자: 셀 정중앙 */
 .bingo-number {
   position: absolute;
-  top: 5px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
+  font-weight: 900;
   line-height: 1;
-  font-weight: 700;
+  text-align: center;
   z-index: 2;
+  user-select: none;
 }
 
-/* 미션: 숫자 아래 */
+/* 미션: 숫자 아래 중앙 */
 .bingo-mission {
   position: absolute;
-  top: 70px;
+  top: calc(50% + 28px);
+  left: 50%;
   transform: translateX(-50%);
   width: 90%;
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.25;
+  font-weight: 700;
   z-index: 2;
+  outline: none;
 }
 
+/* 미션 비어있으면 표시 안함 */
 .bingo-mission:empty {
   display: none;
 }
@@ -497,7 +235,12 @@ body.admin {
   z-index: 5;
 }
 
+/* 체크 안 되면 스탬프 숨김 */
 .bingo-cell:not(.checked) .bingo-stamp {
   display: none;
 }
 
+.bingo-stamp img {
+  width: 80%;
+  height: auto;
+}
