@@ -1,131 +1,81 @@
-// assets/js/render.js
 console.log("render.js loaded")
 
 let editingCellIndex = null
 
-function isAdmin() {
-  return document.body.classList.contains("admin")
+/* =====================
+   안전한 config getter
+===================== */
+function getConfig() {
+  const cfg = window.state?.config || {}
+  return {
+    cols: cfg.cols ?? 4,
+    rows: cfg.rows ?? 4,
+    cellSize: cfg.cellSize ?? 130,
+    gap: cfg.gap ?? 10,
+
+    numberSize: cfg.numberSize ?? 40,
+    numberColor: cfg.numberColor ?? "#111",
+    missionSize: cfg.missionSize ?? 14,
+    missionColor: cfg.missionColor ?? "#333",
+
+    stampScale: cfg.stampScale ?? 85,
+    backgroundUrl: cfg.backgroundUrl ?? ""
+  }
 }
 
-function openEditModal(idx) {
-  editingCellIndex = idx
-
-  const modal = document.getElementById("edit-modal")
-  const numInput = document.getElementById("edit-modal-number")
-  const missionInput = document.getElementById("edit-modal-mission")
-
-  const cell = getBoard().cells[idx]
-
-  numInput.value = cell.number ?? ""
-  missionInput.value = cell.mission ?? ""
-
-  modal.classList.remove("hidden")
-  numInput.focus()
-  numInput.select()
-}
-
-function closeEditModal() {
-  const modal = document.getElementById("edit-modal")
-  modal.classList.add("hidden")
-  editingCellIndex = null
-}
-
-function bindEditModalEvents() {
-  const modal = document.getElementById("edit-modal")
-  const saveBtn = document.getElementById("edit-modal-save")
-  const cancelBtn = document.getElementById("edit-modal-cancel")
-  const backdrop = document.querySelector("#edit-modal .modal-backdrop")
-  const numInput = document.getElementById("edit-modal-number")
-  const missionInput = document.getElementById("edit-modal-mission")
-
-  if (!saveBtn || saveBtn.dataset.bound) return
-  saveBtn.dataset.bound = "1"
-
-  cancelBtn.addEventListener("click", closeEditModal)
-  backdrop.addEventListener("click", closeEditModal)
-
-  saveBtn.addEventListener("click", async () => {
-    if (editingCellIndex === null) return
-
-    const b = getBoard()
-    const cell = b.cells[editingCellIndex]
-
-    // 숫자
-    const v = String(numInput.value || "").trim()
-    cell.number = v === "" ? "" : Number(v)
-
-    // 미션
-    cell.mission = String(missionInput.value || "").trim()
-
-    renderAll()
-
-    if (isAdmin()) {
-      const bj = getBjFromUrl()
-      try {
-        await saveToServer(window.state, bj)
-      } catch (e) {
-        console.error(e)
-        setSaveIndicator("error")
-      }
-    }
-
-    closeEditModal()
-  })
-
-  modal.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeEditModal()
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) saveBtn.click()
-  })
-}
-
+/* =====================
+   메인 렌더
+===================== */
 function renderAll() {
   if (!window.state) return
-  bindEditModalEvents()
   applyBackground()
   applyGridStyle()
   renderBingoGrid()
-  if (typeof updateBoardIndicator === "function") updateBoardIndicator()
 }
 
+/* =====================
+   배경
+===================== */
+function applyBackground() {
+  const bg = document.getElementById("bingo-bg")
+  if (!bg) return
+  const cfg = getConfig()
+  bg.style.backgroundImage = cfg.backgroundUrl
+    ? `url("${cfg.backgroundUrl}")`
+    : "none"
+}
+
+/* =====================
+   그리드 스타일
+===================== */
 function applyGridStyle() {
   const grid = document.getElementById("bingo-grid")
   const wrap = document.getElementById("bingo-wrap")
   if (!grid || !wrap) return
 
-  const cfg = getBoard().config
-  const { cols, rows, cellSize, gap } = cfg
+  const cfg = getConfig()
 
   grid.style.display = "grid"
-  grid.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`
-  grid.style.gridTemplateRows = `repeat(${rows}, ${cellSize}px)`
-  grid.style.gap = `${gap}px`
+  grid.style.gridTemplateColumns = `repeat(${cfg.cols}, ${cfg.cellSize}px)`
+  grid.style.gridTemplateRows = `repeat(${cfg.rows}, ${cfg.cellSize}px)`
+  grid.style.gap = `${cfg.gap}px`
 
-  const pad = 18
-  const w = cols * cellSize + (cols - 1) * gap + pad * 2
-  const h = rows * cellSize + (rows - 1) * gap + pad * 2
-  wrap.style.width = `${w}px`
-  wrap.style.height = `${h}px`
+  const pad = 20
+  wrap.style.width =
+    cfg.cols * cfg.cellSize + (cfg.cols - 1) * cfg.gap + pad * 2 + "px"
+  wrap.style.height =
+    cfg.rows * cfg.cellSize + (cfg.rows - 1) * cfg.gap + pad * 2 + "px"
 }
 
-function applyBackground() {
-  const bg = document.getElementById("bingo-bg")
-  if (!bg) return
-  const cfg = getBoard().config
-  const url = (cfg.backgroundUrl || "").trim()
-  bg.style.backgroundImage = url ? `url("${url}")` : "none"
-}
-
-function isBoardComplete(board) {
-  return board.cells.length > 0 && board.cells.every((c) => c.checked)
-}
-
+/* =====================
+   빙고판
+===================== */
 function renderBingoGrid() {
   const grid = document.getElementById("bingo-grid")
   if (!grid) return
 
+  const cfg = getConfig()
   const board = window.state.boards[window.state.currentIndex]
-  const cfg = window.state.config
-  const isAdmin = document.body.classList.contains("admin")
 
   grid.innerHTML = ""
 
@@ -133,26 +83,21 @@ function renderBingoGrid() {
     const cellEl = document.createElement("div")
     cellEl.className = "bingo-cell" + (cell.checked ? " checked" : "")
 
-    const inner = document.createElement("div")
-    inner.className = "cell-inner"
-
-    // 숫자
+    /* 숫자 */
     const num = document.createElement("div")
     num.className = "bingo-number"
     num.textContent = cell.number ?? ""
     num.style.fontSize = cfg.numberSize + "px"
     num.style.color = cfg.numberColor
 
-    // 미션 (숫자 아래)
+    /* 미션 */
     const mission = document.createElement("div")
     mission.className = "bingo-mission"
     mission.textContent = cell.mission || ""
     mission.style.fontSize = cfg.missionSize + "px"
     mission.style.color = cfg.missionColor
-    mission.contentEditable = isAdmin
-    mission.spellcheck = false
 
-    // 스탬프 (중앙)
+    /* 스탬프 */
     const stamp = document.createElement("div")
     stamp.className = "bingo-stamp"
     const img = document.createElement("img")
@@ -160,33 +105,55 @@ function renderBingoGrid() {
     img.style.width = cfg.stampScale + "%"
     stamp.appendChild(img)
 
-    inner.appendChild(num)
-    inner.appendChild(mission)
-    inner.appendChild(stamp)
-    cellEl.appendChild(inner)
+    cellEl.appendChild(num)
+    cellEl.appendChild(mission)
+    cellEl.appendChild(stamp)
 
-    if (isAdmin) {
-      // 숫자 수정
-      num.addEventListener("dblclick", (e) => {
-        e.stopPropagation()
-        openNumberModal(idx)
-      })
+    /* 클릭 체크 */
+    cellEl.addEventListener("click", async () => {
+      cell.checked = !cell.checked
+      renderAll()
 
-      // 미션 저장
-      mission.addEventListener("blur", async () => {
-        cell.mission = mission.textContent.trim()
-        await saveToServer(window.state, getBJ())
-      })
+      const bj = new URLSearchParams(location.search).get("bj") || "jobs"
+      await saveToServer(window.state, bj)
+    })
 
-      // 체크 토글
-      cellEl.addEventListener("click", async () => {
-        cell.checked = !cell.checked
-        renderAll()
-        await saveToServer(window.state, getBJ())
-      })
-    }
+    /* 숫자 + 미션 수정 */
+    num.addEventListener("dblclick", (e) => {
+      e.stopPropagation()
+      openEditModal(idx)
+    })
 
     grid.appendChild(cellEl)
   })
 }
 
+/* =====================
+   수정 모달
+===================== */
+function openEditModal(idx) {
+  editingCellIndex = idx
+  const board = window.state.boards[window.state.currentIndex]
+
+  document.getElementById("num-modal-input").value =
+    board.cells[idx].number ?? ""
+  document.getElementById("mission-modal-input").value =
+    board.cells[idx].mission ?? ""
+
+  document.getElementById("num-modal").classList.remove("hidden")
+}
+
+document.getElementById("num-modal-save")?.addEventListener("click", async () => {
+  const board = window.state.boards[window.state.currentIndex]
+  const num = Number(document.getElementById("num-modal-input").value)
+  const mission = document.getElementById("mission-modal-input").value.trim()
+
+  if (!Number.isNaN(num)) board.cells[editingCellIndex].number = num
+  board.cells[editingCellIndex].mission = mission
+
+  document.getElementById("num-modal").classList.add("hidden")
+  renderAll()
+
+  const bj = new URLSearchParams(location.search).get("bj") || "jobs"
+  await saveToServer(window.state, bj)
+})
