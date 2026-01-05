@@ -5,12 +5,17 @@ let editingCellIndex = null
 function openNumberModal(idx) {
   editingCellIndex = idx
   const modal = document.getElementById("num-modal")
-  const input = document.getElementById("num-modal-input")
-  const board = window.state.boards[window.state.currentIndex]
-  input.value = String(board.cells[idx].number ?? "")
+
+  const numInput = document.getElementById("num-modal-input")
+  const missionInput = document.getElementById("mission-modal-input")
+
+  const cell = window.state.boards[window.state.currentIndex].cells[idx]
+
+  numInput.value = cell.number ?? ""
+  missionInput.value = cell.mission ?? ""
+
   modal.classList.remove("hidden")
-  input.focus()
-  input.select()
+  numInput.focus()
 }
 
 function closeNumberModal() {
