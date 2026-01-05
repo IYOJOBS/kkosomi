@@ -474,8 +474,7 @@ body.admin {
 /* 미션: 숫자 아래 */
 .bingo-mission {
   position: absolute;
-  top: 56px;
-  left: 50%;
+  top: 70px;
   transform: translateX(-50%);
   width: 90%;
   text-align: center;
