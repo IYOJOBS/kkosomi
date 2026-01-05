@@ -103,18 +103,18 @@ function renderBingoGrid() {
     const cellEl = document.createElement("div")
     cellEl.className = "bingo-cell" + (cell.checked ? " checked" : "")
 
-    // 내부 고정 레이아웃
+    /* ===== 내부 레이아웃 ===== */
     const inner = document.createElement("div")
     inner.className = "cell-inner"
 
-    // 숫자
+    /* 숫자 */
     const num = document.createElement("div")
     num.className = "cell-number"
     num.textContent = cell.number ?? ""
     num.style.fontSize = `${cfg.numberSize}px`
     num.style.color = cfg.numberColor
 
-    // 미션
+    /* 미션 */
     const mission = document.createElement("div")
     mission.className = "cell-mission"
     mission.textContent = cell.mission || "미션 입력"
@@ -125,7 +125,7 @@ function renderBingoGrid() {
     inner.appendChild(num)
     inner.appendChild(mission)
 
-    // 스탬프
+    /* 스탬프 (최상단) */
     const stamp = document.createElement("div")
     stamp.className = "cell-stamp"
     const img = document.createElement("img")
@@ -136,15 +136,15 @@ function renderBingoGrid() {
     cellEl.appendChild(inner)
     cellEl.appendChild(stamp)
 
-    /* ===== 관리자 전용 ===== */
+    /* ===== 관리자 이벤트 ===== */
     if (isAdmin) {
-      // 숫자 클릭 → 숫자+미션 같이 수정
+      // 숫자 클릭 → 숫자 변경
       num.addEventListener("click", (e) => {
         e.stopPropagation()
         openNumberModal(idx)
       })
 
-      // 미션 편집
+      // 미션 입력
       mission.contentEditable = "true"
       mission.spellcheck = false
 
@@ -161,13 +161,15 @@ function renderBingoGrid() {
           mission.textContent = "미션 입력"
           mission.classList.add("placeholder")
         }
-
         const bj = new URLSearchParams(location.search).get("bj") || "jobs"
         await saveToServer(window.state, bj)
       })
 
-      // 수동 체크
-      cellEl.addEventListener("click", async () => {
+      // ✅ 수동 체크는 빈 영역만
+      cellEl.addEventListener("click", async (e) => {
+        if (e.target.closest(".cell-number")) return
+        if (e.target.closest(".cell-mission")) return
+
         cell.checked = !cell.checked
         renderAll()
 
